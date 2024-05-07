@@ -1,0 +1,43 @@
+{% extends 'RestaurantBooking/PageUtils/base.html' %}
+
+{% block content %}
+
+<div class="modal-body">
+    <div class="card-body border p-4 mt-4" id="createForm" style="margin: 0 auto; max-width: 500px;">
+        <!-- Formulario de creación de carrera -->
+        <form method="post" action="{% url 'registrar-carrera' %}" style="display: block;">
+            {% csrf_token %}
+            <h4 class="mb-4 text-center">Registrar Nueva Carrera</h4>
+            <div class="form-group row">
+                <label for="id_nombre" class="col-sm-3 col-form-label">Nombre:</label>
+                <div class="col-sm-9">
+                    {{ form.nombre }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="id_semestres" class="col-sm-3 col-form-label">Semestres:</label>
+                <div class="col-sm-9">
+                    {{ form.semestres }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="id_facultad" class="col-sm-3 col-form-label">Facultad:</label>
+                <div class="col-sm-9">
+                    {{ form.facultad }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="id_recorrido" class="col-sm-3 col-form-label">Recorrido:</label>
+                <div class="col-sm-9">
+                    {{ form.recorrido }}
+                </div>
+            </div>
+            <div class="text-center">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+            </div>
+        </form>
+    </div>
+    
+</div>
+
+{% endblock %}

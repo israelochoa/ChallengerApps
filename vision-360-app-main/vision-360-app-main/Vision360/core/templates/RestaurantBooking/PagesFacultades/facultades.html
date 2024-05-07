@@ -1,0 +1,50 @@
+{% extends 'RestaurantBooking/PageUtils/base.html'%}
+
+{% block content%}
+                    <div class="card shadow mb-4">
+                        <div class="end">
+                            <div class="alert alert-warning">
+                                <p>Para registrar una nueva facultad navega hasta el menú ubicado al lado izquiero <spam style="color: black;">(Gestión Facultades > Nueva facultad)</spam>, haz click,  llena el formulario y listo.</p>
+                             </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead class="thead" style="background-color: #111927; color: aliceblue;">
+                                        <tr>
+                                            <th>Facultad</th>
+                                            <th>Siglas</th>
+                                            <th>Ubicación</th>
+                                            <th>Fecha Creación</th>
+                                            <th>Estado</th>
+                                            <th>Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in facultades %}
+                                        <tr>
+                                            <td>{{ item.nombre }}</td>
+                                            <td>{{item.siglas}}</td>
+                                            <td><a target="_blank" href="{{item.ubicacion}}"><button class="btn btn-success">Visitar <i class="fas fa-map-marker-alt"></i></button></a></td>
+                                            <td>{{item.date_joined}}</td>
+                                            <td>Activo</td>
+                                            <td>
+                                                <div class="text-center">
+                                                    <a href="">
+                                                        <i class="fas fa-trash-alt text-danger"></i>
+                                                    </a>
+                                                </div>
+                                                
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+
+{% endblock %}

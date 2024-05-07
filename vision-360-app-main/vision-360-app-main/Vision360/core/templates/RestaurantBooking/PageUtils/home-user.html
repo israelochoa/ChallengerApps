@@ -1,0 +1,74 @@
+{% extends 'RestaurantBooking/PageUtils/base-user.html'%}
+
+
+{% block content %}
+
+<div class="container-fluid border">
+
+  <div class="row ">
+   </div>
+   <div id="map" style="width: 950px; height: 450px;"></div>
+
+    
+</div>
+</div>
+
+
+<script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
+    v: "weekly",
+    // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+    // Add other bootstrap parameters as needed, using camel case.
+  });
+
+// Initialize and add the map
+let map;
+
+async function initMap() {
+  // The location of Uluru
+  const position =  {lat:-4.034410, lng:-79.202563} ;
+  // Request needed libraries.
+  //@ts-ignore
+  const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+  // The map, centered at Uluru
+  map = new Map(document.getElementById("map"), {
+    zoom: 17,
+    center: position,
+    mapId: "DEMO_MAP_ID",
+  });
+
+  // The marker, positioned at Uluru
+  const marker = new AdvancedMarkerElement({
+    map: map,
+    position: position,
+    title: "UNiversidad Nacional de Loja",
+  });
+  const triangleCoords = [
+    {lat:-4.030758408796387, lng:-79.19970656084314},
+    {lat:-4.035487, lng:-79.199667},
+    { lat: -4.037348,  lng:  -79.204178 },
+    { lat: -4.03696369690101,  lng: -79.2066423137667 },
+    {lat:-4.0361034382211765, lng:-79.20621968451417},
+    {lat:-4.036283959951185, lng:-79.20541403409355},
+    {lat:-4.0329109967425785, lng:-79.20255192126763},
+    {lat:-4.032600, lng: -79.201661},
+  ];
+  // Construct the polygon.
+  const UNLTriangle = new google.maps.Polygon({
+    paths: triangleCoords,
+    strokeColor: "#FF0000",
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: "#FF0000",
+    fillOpacity: 0.35,
+  });
+
+  UNLTriangle.setMap(map);
+}
+
+initMap();
+</script>
+{% endblock %}

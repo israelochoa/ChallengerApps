@@ -1,0 +1,84 @@
+{% extends 'RestaurantBooking/PageUtils/base-user.html' %}
+
+{% block content %}
+
+{% if bloques %}
+<div class="alert alert-info" role="alert">
+    Agradecemos tu visita en esta sección tienes a tu disponibilidad todos los bloques de la carrera {{carrera.nombre}}
+  </div>
+<section  class="border rounded">
+    <div class="container py-5">
+        {% for item in bloques %}
+      <div class="row justify-content-center mb-3">
+        <div class="col-md-12 col-xl-10" >
+          <div class="card shadow-0 border rounded-3"  style="background-color: #e0e0e0;">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                  <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                    <img src="{{item.imagen.url}}"
+                      class="rounded border" width="140px"/>
+                    <a href="#!">
+                      <div class="hover-overlay">
+                        <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-6">
+                  <spam class="text-dark">Bloque: {{item.codigo_identificativo}} >> {{item.nombre}} </spam>
+                  <div class="d-flex flex-row">
+                    <div class="text-warning mb-1 me-2">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-2 text-muted small">
+                    <span>Universidad Nacional de Loja</span>
+                    <span> Ciudad Universitaria </span>
+                    <span>Guillermo Falconi</span>
+                    
+                  </div>
+                  <p class="text-truncate mb-4 mb-md-0">
+                    <spam class="text-dark">Descripción: </spam>{{item.descripcion}}
+                  </p>
+                </div>
+                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                  <div class="alert alert-warning mb-2 text-muted small">
+                    <spam>Dale clik al botón verde y visita este bloque</spam>
+
+                  </div>
+                  <div class="d-flex flex-column mt-4 ml-4">
+                    <a target="_blank" href="{{item.link}}"><button class="btn btn-success btn-sm" type="button">Realiza recorrido <i class="fas fa-plane"></i></button></a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+{% else %}
+<div style="text-align: center;">
+    <div class="alert alert-danger" role="alert" style="margin-bottom: 20px;">
+        La carrera {{ carrera.nombre }} no cuenta con bloques que permitan una visita en 360.
+    </div>
+    <div id="error-container" style="margin-bottom: 20px;">
+        <h1 style="color: red;">Error 404: Página no encontrada</h1>
+        <p>Lo sentimos, la página que estás buscando no se ha encontrado.</p>
+        <p>Por favor, contacta a nuestro servicio al cliente para obtener ayuda.</p>
+        <button onclick="window.history.back()" class="btn btn-warning">Regresar</button>
+    </div>
+    <p style="font-style: italic; color: green;">¡Gracias por visitarnos!</p>
+</div>
+
+
+{% endif %}
+
+{% endblock%}

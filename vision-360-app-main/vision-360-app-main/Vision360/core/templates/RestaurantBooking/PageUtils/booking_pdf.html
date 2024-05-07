@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Report-pdf-{{booking.client}}</title>
+</head>
+<body>
+
+<div style="border-style: dashed double none; padding:10px;">
+  <div style="display:flex; justify-content:center; align-items: center;">
+    <h4>"Brasa y leña Restaurante"</h4>
+  </div>
+  <div align="right">
+
+    <p>La reserva para {{ booking.countPeople }} personas, hecha por <span style="color: blue">{{ booking.client }}</span>, ha sido agendada para el día {{ booking.dateBooking }} a las {{ booking.hourBooking }}. Dejo mi numero de telefono como constancia de la reserva: {{ booking.phoneContact }}.</p>
+    <p> Este recibo sirve como constancia de que haz hecho una reserva con nosotros, al momento de llegar al restaurant debera facilitar este recibo para constancia que haz llegado.</p>
+  </div>
+<div style="display:flex; justify-content:center; align-items: center;">
+    <h4>"Gracias por preferirnos"</h4>
+  </div>
+
+  <p>
+  -----------------
+  </p>
+  <h6>Firma conforme(clt)</h6>
+
+</body>
+</html>

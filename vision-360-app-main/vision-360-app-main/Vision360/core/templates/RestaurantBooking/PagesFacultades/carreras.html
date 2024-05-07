@@ -1,0 +1,72 @@
+{% extends 'RestaurantBooking/PageUtils/base.html'%}
+
+{% block content%}
+                    <div class="card shadow mb-4">
+                        <div class="alert alert-warning">
+                            <p>Para registrar una nueva carrera navega hasta el menú ubicado al lado izquiero <spam style="color: black;">(Gestión Carreras > Nueva carrera)</spam>, haz click,  llena el formulario y listo.</p>
+                         </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead class="thead" style="background-color: #111927; color: aliceblue;">
+                                        <tr>
+                                            <th>Carrera</th>
+                                            <th>Facultad</th>
+                                            <th>Duración (semestres)</th>
+                                            <th>Fecha Registro</th>
+                                            <th>Estado</th>
+                                            <th>Recorrido </th>
+                                            <th>Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in carreras %}
+                                        <tr>
+                                            <td>{{ item.nombre }}</td>
+
+                                            <td>
+                                                {{item.facultad.nombre}}
+                                            </td>
+                                            <td>
+                                                <div class="text-center">
+                                                    {{item.semestres}}
+                                                </div>
+                                                </td>
+                                            <td>{{item.date_joined}}</td>
+                                            <td>Activo</td>                                                
+                                            <td class="text-center">
+                                                    {% if item.recorrido %}
+                                                        <span class="text-success">Disponible</span>
+                                                    {% else %}
+                                                    <span class="text-danger">No dispobible</span>
+                                                    {% endif %}
+                                                </td>
+                                            <td>
+                                                <div class="text-center">
+                                                    <a href="">
+                                                        <i class="fas fa-trash-alt text-danger"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <script>
+                        document.getElementById('toggleForm').addEventListener('click', function() {
+                            var formDiv = document.getElementById('createForm');
+                            if (formDiv.style.display === 'none') {
+                                formDiv.style.display = 'block';
+                            } else {
+                                formDiv.style.display = 'none';
+                            }
+                        });
+                    </script>
+                    
+
+{% endblock %}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pantalla de Inicio</title>
+
+{% load static %}
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+  .background-container {
+    background-image: url('https://unl.edu.ec/sites/default/files/inline-images/UNL%20pano%203.jpg');
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content {
+    text-align: center;
+    background-color: rgba(243, 243, 243, 0.171);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+  }
+
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+ <!-- Custom fonts for this template -->
+ <link href="{% static 'utils/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+ <link
+     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+     rel="stylesheet">
+
+ <!-- Custom styles for this template -->
+ <link href="{% static 'utils/css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+ <!-- Custom styles for this page -->
+ <link href="{% static 'utils/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+
+</head>
+<body>
+<div class="background-container text-center">
+  <div class="content">
+    <h4 class="text-dark coursive">Bienvenido !</h4>
+    <a href="{% url 'page-login' %}"> <button class="btn btn-success">Ingresar como Admin <i class="fas fa-user"></i> </button> </a>
+    <a href="{% url 'page-home' %}"> <button class="btn btn-primary">Ingresar como visitante <i class="fas fa-search"></i> </button> </a>
+
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

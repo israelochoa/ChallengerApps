@@ -1,0 +1,46 @@
+{% extends 'RestaurantBooking/PageUtils/base.html'%}
+
+
+{% block content %}
+<div class="container-fluid border">
+
+  <div class="row ">
+    <div class="col-sm text-center  m-4 shadow p-3 mb-5 rounded" style="border-top: 4px solid rgb(51, 113, 172); border-left: solid 1px rgb(209, 209, 209); border-right: solid 1px rgb(209, 209, 209); border-bottom: solid 1px rgb(209, 209, 209);">
+        <div class="img">
+            <img class="img-profile rounded-circle"
+            src="https://cdn.icon-icons.com/icons2/1371/PNG/512/batman_90804.png" width="80">
+    </a>        </div>
+        <div class="tex-center mt-3">
+            <a href="#" style="color: #2F6073; font-size: 14px;">Actualizar (Cambiar)</a>
+        </div>
+        <div class="divider my-3">
+            <span class="text-primary">{{ user.email }}</span>
+        </div>
+        <div class="divider my-3">
+            <span>{{ user.first_name }} {{ user.last_name }}</span>
+        </div>
+        <div class="divider my-3 text-left">
+            <span>Estado: <a class="text-success">Activo</a></span>
+        </div>
+        <div class="divider my-3 text-left">
+            <span>Activo desde: {{ user.date_joined }}</span>
+        </div>
+    </div>
+
+    <div class="col-sm text-center  m-4 shadow p-3 mb-5 rounded" style="border-top: 4px solid rgb(51, 113, 172); border-left: solid 1px rgb(209, 209, 209); border-right: solid 1px rgb(209, 209, 209); border-bottom: solid 1px rgb(209, 209, 209);">
+      
+      <div class="divider my-3 text-left">
+        <a class="text-dark">Información personal</a></span>
+      </div>
+      <div class="divider my-3 text-left">
+          <p>Por favor solicitamos completar su información personal en la sección de perfil
+          </p>
+      </div>
+      <div class="divider my-3 text-left">
+        <button type="button" class="btn btn-primary">Ir a perfil
+        </button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

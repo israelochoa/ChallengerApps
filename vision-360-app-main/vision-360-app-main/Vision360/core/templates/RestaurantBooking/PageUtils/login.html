@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <title>Inicio de sesion </title>
+     <!-- Custom fonts for this template -->
+    <link href="{% static 'utils/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'utils/css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css">
+
+
+
+    <!-- Custom styles for this page -->
+    <link href="{% static 'utils/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+</head>
+<body >
+  {% if error_message %}
+  <div class="alert alert-danger mt-4">
+    <p class="error-message">{{ error_message }}</p>
+  </div>
+{% endif %}
+
+  <h2>Administración 360</h2>
+  <div class="container" id="container">
+    <div class="form-container sign-in-container">
+      <form method="POST" action="">
+        {% csrf_token %}
+
+        <h1>Sign in</h1>
+        <div class="social-container">
+          <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+          <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <span>o usa tu cuenta </span>
+        
+        <input type="text" name="username" id="id_username" placeholder="Ingrese usuario" />
+        <input type="password" name="password" id="id_password" placeholder="Ingrese clave" />
+        <a href="#">Olvidaste tu clave ?</a>
+        <button>Ingresar</button>
+      </form>
+    </div>
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-right">
+          <div class="text-center mb-4">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/UNL3.png" width="80"/> 
+
+          </div>
+          <spam>Universidad Nacional de Loja </spam>
+          <p>Panel de administración para la gestión del sistema de visión 360°</p>
+        </div>
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Backaaaaa!</h1>
+         
+          <p>To keep connected with us please login with your personal info</p>
+          <button class="ghost" id="signIn">Sign In</button>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Función para mostrar el SweetAlert
+    function mostrarSweetAlert(mensaje) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: mensaje,
+        confirmButtonText: 'Entendido'
+      });
+    }
+
+    // Llama a la función para mostrar el SweetAlert al cargar la página
+    window.onload = function() {
+      mostrarSweetAlert('{{ error_message }}');
+    };
+  </script>
+  
+</body>
+</html>
