@@ -38,15 +38,28 @@
       let map;
              // Función para agregar marcadores al mapa
              function addMarkers(map, bloques) {
-    Object.values(bloques).forEach(function(bloque) {
-      const marker = new google.maps.Marker({
-        position: {lat:-4.032678075410565,lng: -79.20019247309627 },
-        map: map,
-        title: bloque.fields.nombre  // El título se muestra al pasar el mouse sobre el marcador
-      });
+   
+      var data = JSON.parse(bloques.textContent);
+      Object.values(data).forEach(function(bloque) {
+        console.log(bloque.fields.latitud);
+        console.log(bloque.fields.longitud);
+        const marker = new google.maps.Marker({
+          position: {lat:parseFloat(bloque.fields.latitud),lng:parseFloat(bloque.fields.longitud) },
+          map: map,
+          title: bloque.fields.nombre  // El título se muestra al pasar el mouse sobre el marcador
+        });
+        marker.addListener('click', function() {
+    const panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+      position: marker.getPosition(),
+      pov: {
+        heading: 34,
+        pitch: 10
+      }
+    });
+    map.setStreetView(panorama);})
       //map.setStreetView(panorama);
     });
-    return map
+    
 }
 
       async function initMap() {
@@ -62,10 +75,11 @@
           mapId: "DEMO_MAP_ID",
         });
       
-       
-        initZoomControl(map);
-        initMapTypeControl(map);
-        initFullscreenControl(map);
+        await addMarkers(map, bloquesdata) 
+        drawPolygons(map) 
+        //initZoomControl(map);
+        //await initMapTypeControl(map);
+        //initFullscreenControl(map);
         
        
         
