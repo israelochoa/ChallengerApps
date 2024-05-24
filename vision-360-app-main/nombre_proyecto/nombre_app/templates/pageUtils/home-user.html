@@ -26,43 +26,79 @@
 let map;
 
 async function initMap() {
-  // The location of Uluru
-  const position =  {lat:-4.034410, lng:-79.202563} ;
-  // Request needed libraries.
-  //@ts-ignore
-  const { Map } = await google.maps.importLibrary("maps");
+    const position = { lat: -4.034410, lng: -79.202563 };
+    const { Map } = await google.maps.importLibrary("maps");
 
-  // The map, centered at Uluru
-  map = new Map(document.getElementById("map"), {
-    zoom: 16,
-    center: position,
-    mapId: "DEMO_MAP_ID",
-  });
+    map = new Map(document.getElementById("map"), {
+      zoom: 16,
+      center: position,
+      mapId: "DEMO_MAP_ID",
+    });
 
+    const triangleCoords = [
+      { lat: -4.030758408796387, lng: -79.19970656084314 },
+      { lat: -4.035487, lng: -79.199667 },
+      { lat: -4.037348, lng: -79.204178 },
+      { lat: -4.03696369690101, lng: -79.2066423137667 },
+      { lat: -4.0361034382211765, lng: -79.20621968451417 },
+      { lat: -4.036283959951185, lng: -79.20541403409355 },
+      { lat: -4.0329109967425785, lng: -79.20255192126763 },
+      { lat: -4.032600, lng: -79.201661 },
+    ];
 
-  const triangleCoords = [
-    {lat:-4.030758408796387, lng:-79.19970656084314},
-    {lat:-4.035487, lng:-79.199667},
-    { lat: -4.037348,  lng:  -79.204178 },
-    { lat: -4.03696369690101,  lng: -79.2066423137667 },
-    {lat:-4.0361034382211765, lng:-79.20621968451417},
-    {lat:-4.036283959951185, lng:-79.20541403409355},
-    {lat:-4.0329109967425785, lng:-79.20255192126763},
-    {lat:-4.032600, lng: -79.201661},
-  ];
-  // Construct the polygon.
-  const UNLTriangle = new google.maps.Polygon({
-    paths: triangleCoords,
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-  });
+    const UNLTriangle = new google.maps.Polygon({
+      paths: triangleCoords,
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35,
+    });
 
-  UNLTriangle.setMap(map);
-}
+    UNLTriangle.setMap(map);
 
-initMap();
+    const personIcon = {
+      url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA3UlEQVRIS+2T0Q3CMAxE2wmACYANGKFswAbAJMAkwAZsQEdgBJgANoA7yf4pcuyg5otGstI09l3znNZV4VEX1q/+y6ABzqMg3WJuI3hzEN0hOBVRPs/7NnhBcCSiD8yzvg2I6CSimxKIIh/8lRPpwRhVV8SiU33DeokgOnNEDIhlbShwjzfqZwOy1qtpidBAe5OFiEiIhohSg4iIisiyDPbI3iHOCUS6d0AO87MMmLxCtIincYQJ3jeIi3XESJNZ+zYE3Ho3QYTVQPO7a7NHg4FLwE1I/QCRvcHApfQBFMQiGZkJ85AAAAAASUVORK5CYII=",
+      scaledSize: new google.maps.Size(50, 50),
+    };
+
+    marker = new google.maps.Marker({
+      position: triangleCoords[6],
+      map: map,
+      icon: personIcon,
+      title: "Te encuentras aquí",
+    });
+
+    document.querySelectorAll('[id^="redirectCampus"]').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const campusId = e.currentTarget.getAttribute('data-campus-id');
+        animateMarker(triangleCoords[6], triangleCoords[0], campusId);
+      });
+    });
+  }
+
+  function animateMarker(start, end, campusId) {
+    let startTime;
+    const duration = 2000;
+
+    function animate(time) {
+      if (!startTime) startTime = time;
+      const progress = (time - startTime) / duration;
+
+      if (progress < 1) {
+        const lat = start.lat + (end.lat - start.lat) * progress;
+        const lng = start.lng + (end.lng - start.lng) * progress;
+        marker.setPosition({ lat, lng });
+        requestAnimationFrame(animate);
+      } else {
+        marker.setPosition(end);
+        window.location.href = `/carrera/${campusId}/bloques/`;
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  initMap();
 </script>
 {% endblock %}

@@ -27,228 +27,229 @@
   // Tu función initMap existente aquí
 
   console.log(bloquesdata);
-      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-        key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
-        v: "weekly",
-        // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
-        // Add other bootstrap parameters as needed, using camel case.
+  (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+    key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
+    v: "weekly",
+    // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+    // Add other bootstrap parameters as needed, using camel case.
+  });
+
+  // Initialize and add the map
+  let map;
+  // Función para agregar marcadores al mapa
+  function addMarkers(map, bloques) {
+
+    var data = JSON.parse(bloques.textContent);
+    Object.values(data).forEach(function (bloque) {
+      console.log(bloque.fields.latitud);
+      console.log(bloque.fields.longitud);
+      const marker = new google.maps.Marker({
+        position: { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) },
+        map: map,
+        title: bloque.fields.nombre  // El título se muestra al pasar el mouse sobre el marcador
       });
-      
-      // Initialize and add the map
-      let map;
-             // Función para agregar marcadores al mapa
-             function addMarkers(map, bloques) {
-   
-      var data = JSON.parse(bloques.textContent);
-      Object.values(data).forEach(function(bloque) {
-        console.log(bloque.fields.latitud);
-        console.log(bloque.fields.longitud);
-        const marker = new google.maps.Marker({
-          position: {lat:parseFloat(bloque.fields.latitud),lng:parseFloat(bloque.fields.longitud) },
-          map: map,
-          title: bloque.fields.nombre  // El título se muestra al pasar el mouse sobre el marcador
+      marker.addListener('click', function () {
+        const panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+          position: marker.getPosition(),
+          pov: {
+            heading: 34,
+            pitch: 10
+          }
         });
-        marker.addListener('click', function() {
-    const panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
-      position: marker.getPosition(),
-      pov: {
-        heading: 34,
-        pitch: 10
-      }
-    });
-    map.setStreetView(panorama);})
+        map.setStreetView(panorama);
+      })
       //map.setStreetView(panorama);
     });
-    
-}
 
-      async function initMap() {
-        const { Map } = await google.maps.importLibrary("maps");
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-      
-        const position =  {lat:-4.032678075410565,lng: -79.20019247309627 };
-        
-      
-        map = new Map(document.getElementById("map"), {
-          zoom: 18,
-          center: position,
-          mapId: "DEMO_MAP_ID",
-        });
-      
-        await addMarkers(map, bloquesdata) 
-        drawPolygons(map) 
-        //initZoomControl(map);
-        //await initMapTypeControl(map);
-        //initFullscreenControl(map);
-        
-       
-        
+  }
+
+  async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    const position = { lat: -4.032678075410565, lng: -79.20019247309627 };
+
+
+    map = new Map(document.getElementById("map"), {
+      zoom: 18,
+      center: position,
+      mapId: "DEMO_MAP_ID",
+    });
+
+    await addMarkers(map, bloquesdata)
+    drawPolygons(map)
+    //initZoomControl(map);
+    //await initMapTypeControl(map);
+    //initFullscreenControl(map);
+
+
+
+  }
+
+  /**
+   * Dibuja los polígonos en el mapa.
+   * @param {google.maps.Map} map - El mapa de Google Maps.
+   */
+
+  function drawPolygons(map) {
+    const triangleCoords = [
+      { lat: -4.030758408796387, lng: -79.19970656084314 },
+      { lat: -4.035487, lng: -79.199667 },
+      { lat: -4.037348, lng: -79.204178 },
+      { lat: -4.03696369690101, lng: -79.2066423137667 },
+      { lat: -4.0361034382211765, lng: -79.20621968451417 },
+      { lat: -4.036283959951185, lng: -79.20541403409355 },
+      { lat: -4.0329109967425785, lng: -79.20255192126763 },
+      { lat: -4.032600, lng: -79.201661 },
+    ];
+
+    const UNLTriangle = new google.maps.Polygon({
+      paths: triangleCoords,
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.1,
+    });
+
+    const triangleCampusA1 = [
+      { lat: -4.032726235646539, lng: -79.19992425219932 },
+      { lat: -4.032723560074428, lng: -79.20085631982569 },
+      { lat: -4.032224566500394, lng: -79.20076110140667 },
+      { lat: -4.032177744031354, lng: -79.20038156883508 },
+      { lat: -4.029828739758188, lng: -79.19957923146498 },
+      { lat: -4.030084051305431, lng: -79.19918341049383 },
+    ];
+
+    const UNLtriangleCampusA1 = new google.maps.Polygon({
+      paths: triangleCampusA1,
+      strokeColor: "#FFFF00",
+      strokeOpacity: 1,
+      strokeWeight: 2,
+      fillColor: "#FFFF00",
+      fillOpacity: 0.2,
+      title: "CampusA1",
+    });
+
+    UNLTriangle.setMap(map);
+    UNLtriangleCampusA1.setMap(map);
+  }
+
+
+  function initZoomControl(map) {
+    document.addEventListener('DOMContentLoaded', function () {
+      const zoomInButton = document.querySelector(".zoom-control-in");
+      const zoomOutButton = document.querySelector(".zoom-control-out");
+
+      if (zoomInButton && zoomOutButton) {
+        zoomInButton.onclick = function () {
+          map.setZoom(map.getZoom() + 1);
+        };
+
+        zoomOutButton.onclick = function () {
+          map.setZoom(map.getZoom() - 1);
+        };
+
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
       }
-      
-      /**
-       * Dibuja los polígonos en el mapa.
-       * @param {google.maps.Map} map - El mapa de Google Maps.
-       */
+    });
+  }
 
-      function drawPolygons(map) {
-        const triangleCoords = [
-          {lat:-4.030758408796387, lng:-79.19970656084314},
-          {lat:-4.035487, lng:-79.199667},
-          { lat: -4.037348,  lng:  -79.204178 },
-          { lat: -4.03696369690101,  lng: -79.2066423137667 },
-          {lat:-4.0361034382211765, lng:-79.20621968451417},
-          {lat:-4.036283959951185, lng:-79.20541403409355},
-          {lat:-4.0329109967425785, lng:-79.20255192126763},
-          {lat:-4.032600, lng: -79.201661},
-        ];
-      
-        const UNLTriangle = new google.maps.Polygon({
-          paths: triangleCoords,
-          strokeColor: "#FF0000",
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: "#FF0000",
-          fillOpacity: 0.1,
-        });
-      
-        const triangleCampusA1 = [
-          {lat:-4.032726235646539,lng: -79.19992425219932},
-          {lat:-4.032723560074428, lng:-79.20085631982569},
-          {lat:-4.032224566500394,lng: -79.20076110140667},
-          {lat:-4.032177744031354,lng: -79.20038156883508},
-          {lat:-4.029828739758188,lng: -79.19957923146498},
-          {lat:-4.030084051305431,lng: -79.19918341049383},
-        ];
-      
-        const UNLtriangleCampusA1  = new google.maps.Polygon({
-          paths: triangleCampusA1,
-          strokeColor: "#FFFF00",
-          strokeOpacity: 1,
-          strokeWeight: 2,
-          fillColor: "#FFFF00",
-          fillOpacity: 0.2,
-          title: "CampusA1",
-        });
-      
-        UNLTriangle.setMap(map);
-        UNLtriangleCampusA1.setMap(map);
+
+
+  function initMapTypeControl(map) {
+    const mapTypeControlDiv = document.querySelector(".maptype-control");
+
+    document.querySelector(".maptype-control-map").onclick = function () {
+      mapTypeControlDiv.classList.add("maptype-control-is-map");
+      mapTypeControlDiv.classList.remove("maptype-control-is-satellite");
+      map.setMapTypeId("roadmap");
+    };
+
+    document.querySelector(".maptype-control-satellite").onclick = function () {
+      mapTypeControlDiv.classList.remove("maptype-control-is-map");
+      mapTypeControlDiv.classList.add("maptype-control-is-satellite");
+      map.setMapTypeId("hybrid");
+    };
+
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapTypeControlDiv);
+  }
+
+  function initFullscreenControl(map) {
+    const elementToSendFullscreen = map.getDiv().firstChild;
+    const fullscreenControl = document.querySelector(".fullscreen-control");
+
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(fullscreenControl);
+    fullscreenControl.onclick = function () {
+      if (isFullscreen(elementToSendFullscreen)) {
+        exitFullscreen();
+      } else {
+        requestFullscreen(elementToSendFullscreen);
       }
-      
-      
-      function initZoomControl(map) {
-  document.addEventListener('DOMContentLoaded', function () {
-    const zoomInButton = document.querySelector(".zoom-control-in");
-    const zoomOutButton = document.querySelector(".zoom-control-out");
+    };
 
-    if(zoomInButton && zoomOutButton) {
-      zoomInButton.onclick = function () {
-        map.setZoom(map.getZoom() + 1);
+    document.onwebkitfullscreenchange =
+      document.onmsfullscreenchange =
+      document.onmozfullscreenchange =
+      document.onfullscreenchange =
+      function () {
+        if (isFullscreen(elementToSendFullscreen)) {
+          fullscreenControl.classList.add("is-fullscreen");
+        } else {
+          fullscreenControl.classList.remove("is-fullscreen");
+        }
       };
+  }
 
-      zoomOutButton.onclick = function () {
-        map.setZoom(map.getZoom() - 1);
-      };
+  function isFullscreen(element) {
+    return (
+      (document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement) == element
+    );
+  }
 
-      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
-      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
+  function requestFullscreen(element) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.webkitRequestFullScreen) {
+      element.webkitRequestFullScreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.msRequestFullScreen) {
+      element.msRequestFullScreen();
     }
-  });
-}
+  }
+
+  function exitFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
 
 
-      
-      function initMapTypeControl(map) {
-        const mapTypeControlDiv = document.querySelector(".maptype-control");
-      
-        document.querySelector(".maptype-control-map").onclick = function () {
-          mapTypeControlDiv.classList.add("maptype-control-is-map");
-          mapTypeControlDiv.classList.remove("maptype-control-is-satellite");
-          map.setMapTypeId("roadmap");
-        };
-      
-        document.querySelector(".maptype-control-satellite").onclick = function () {
-          mapTypeControlDiv.classList.remove("maptype-control-is-map");
-          mapTypeControlDiv.classList.add("maptype-control-is-satellite");
-          map.setMapTypeId("hybrid");
-        };
-      
-        map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapTypeControlDiv);
-      }
-      
-      function initFullscreenControl(map) {
-        const elementToSendFullscreen = map.getDiv().firstChild;
-        const fullscreenControl = document.querySelector(".fullscreen-control");
-      
-        map.controls[google.maps.ControlPosition.RIGHT_TOP].push(fullscreenControl);
-        fullscreenControl.onclick = function () {
-          if (isFullscreen(elementToSendFullscreen)) {
-            exitFullscreen();
-          } else {
-            requestFullscreen(elementToSendFullscreen);
-          }
-        };
-      
-        document.onwebkitfullscreenchange =
-          document.onmsfullscreenchange =
-          document.onmozfullscreenchange =
-          document.onfullscreenchange =
-            function () {
-              if (isFullscreen(elementToSendFullscreen)) {
-                fullscreenControl.classList.add("is-fullscreen");
-              } else {
-                fullscreenControl.classList.remove("is-fullscreen");
-              }
-            };
-      }
-      
-      function isFullscreen(element) {
-        return (
-          (document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.mozFullScreenElement ||
-            document.msFullscreenElement) == element
-        );
-      }
-      
-      function requestFullscreen(element) {
-        if (element.requestFullscreen) {
-          element.requestFullscreen();
-        } else if (element.webkitRequestFullScreen) {
-          element.webkitRequestFullScreen();
-        } else if (element.mozRequestFullScreen) {
-          element.mozRequestFullScreen();
-        } else if (element.msRequestFullScreen) {
-          element.msRequestFullScreen();
-        }
-      }
-      
-      function exitFullscreen() {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-      }
-      
-      
-      
-      
-      initMap();
-      </script>
+
+
+  initMap();
+</script>
 
 {% else %}
 <div style="text-align: center;">
 
-    <div id="error-container" style="margin-bottom: 20px;">
-        <p>El campus {{ campus.codigo_identificativo }} no cuenta con bloques que permitan una visita en 360.
-          Anada bloques desde el administrador</p>
-        <button onclick="window.history.back()" class="btn btn-warning">Ir a Admin</button>
-    </div>
-    <p style="font-style: italic; color: green;">¡Gracias por visitarnos!</p>
+  <div id="error-container" style="margin-bottom: 20px;">
+    <p>El campus {{ campus.codigo_identificativo }} no cuenta con bloques que permitan una visita en 360.
+      Anada bloques desde el administrador</p>
+    <button onclick="window.history.back()" class="btn btn-warning">Ir a Admin</button>
+  </div>
+  <p style="font-style: italic; color: green;">¡Gracias por visitarnos!</p>
 </div>
 <script>
   console.log("No ingreso");
