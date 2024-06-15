@@ -36,6 +36,7 @@ class BloqueForm(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
             'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'imagen': forms.FileInput(attrs={'class': 'form-control-file'}),
-            'link': forms.URLInput(attrs={'class': 'form-control'})
+            'link': forms.URLInput(attrs={'class': 'form-control'}),
+            'entrada_campus': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

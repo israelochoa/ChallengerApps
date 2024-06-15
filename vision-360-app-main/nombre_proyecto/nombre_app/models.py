@@ -36,6 +36,7 @@ class Bloque(models.Model):
     link = models.URLField(blank=True)  # Campo para el enlace, puede estar vacío
     latitud=models.FloatField(default=0.0, null=False)
     longitud=models.FloatField(default=0.0, null=False)
+    entrada_campus= models.BooleanField(default=False)
     class Meta:
             db_table = 'Bloque'
     def __str__(self):

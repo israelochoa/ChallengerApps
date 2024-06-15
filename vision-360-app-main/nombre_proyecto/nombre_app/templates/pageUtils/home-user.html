@@ -1,21 +1,126 @@
 {% extends 'pageUtils/base-user.html'%}
 
-
 {% block content %}
+{% if bloques %}
+{{ bloques|json_script:"bloquesdata" }}
 
-
+{{ campuss|json_script:"campusdata" }}
 <div class="container-fluid border">
-
-  <div class="row ">
-  </div>
+  <div class="row "></div>
   <div id="map" style="width: 950px; height: 450px;"></div>
-
+  <div id="map-label" class="map-label">Universidad Nacional de Loja</div>
+  <!-- Contenedor para el círculo palpitante -->
+  <div id="pulse-circle-container"></div>
 </div>
-</div>
 
+<style>
+  .pulse-circle {
+    width: 80px;
+    height: 80px;
+    border: 3px solid rgba(255, 0, 0, 0.5);
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: pulse 1s infinite ease-in-out;
+  }
 
+  @keyframes pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+  }
+
+  
+.animated-label {
+  position: absolute;
+  padding: 5px 10px;
+  background: linear-gradient(
+  to right, 
+  rgba(242, 242, 1, 0.974) 26%,  /* Comienza en el 0% y se extiende hasta el 20% */
+  rgba(1, 210, 0, 0.674) 63%,    /* Comienza en el 20% y se extiende hasta el 60% */
+  rgba(255, 0, 0, 0.674) 100%    /* Comienza en el 60% y se extiende hasta el 100% */
+);
+  
+  color: #010000;
+  font-size: 18px;
+  font-weight:bold;
+  border-radius: 5px;
+  transform: translate(-50%, -150%);
+  animation: fadeInOut 3s infinite ease-in-out;
+  opacity: 0.7;
+  transition: opacity 2s;
+}
+
+.animated-label:hover, .animated-label:hover + .pulse-circle {
+  opacity: 1;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.marker-tooltip {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000; /* Asegura que el tooltip esté por encima de otros elementos */
+  }
+
+  .marker:hover .marker-tooltip {
+    opacity: 1;
+    transform: translateX(110%);
+  }
+
+  .genie-animation {
+    position: absolute;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    transform-origin: top left;
+    transform: scale(0) translateY(-100%);
+    animation: genie-animation 0.5s ease forwards;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+  }
+
+  @keyframes genie-animation {
+    0% {
+      transform: scale(0) translateY(-100%);
+    }
+    70% {
+      transform: scale(1.1) translateY(-30%);
+    }
+    100% {
+      transform: scale(1) translateY(0);
+    }
+  }
+</style>
 
 <script>
+  console.log("-------------------");
+  console.log()
+  console.log("-------------------");
   (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
     v: "weekly",
@@ -48,29 +153,129 @@
       { lat: -4.0329109967425785, lng: -79.20255192126763 },
       { lat: -4.032600, lng: -79.201661 },
     ];
-
-    const UNLTriangle = new google.maps.Polygon({
-      paths: triangleCoords,
-      strokeColor: "#FF0000",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: "#FF0000",
-      fillOpacity: 0.35,
-    });
-
-    UNLTriangle.setMap(map);
+    console.log("call drawPolygons")
+    drawPolygons(map,triangleCoords)
+    console.log("call with null icon")
+    await addMarkers(map, triangleCoords, null)
+    
 
     // Definición del ícono 3D que se utilizará para el marcador en el mapa.
     const personIcon = {
       url: "../static/utils/img/persona.gif",  // URL de la imagen del ícono.
       scaledSize: new google.maps.Size(60, 60), // Tamaño del ícono en el mapa.
     };
+    console.log("call with icon")
+    await addMarkers(map, triangleCoords, personIcon)
+    
+    const bounds = new google.maps.LatLngBounds();
+    triangleCoords.forEach(coord => bounds.extend(coord));
+    const center = bounds.getCenter();
+    
+    
+    //const positionBloques: 
+    const pulsePosition = triangleCoords[6]; // Posición del marcador de persona
 
+    // Crear el círculo palpitante debajo del marcador de persona
+    addPulseCircle(map, pulsePosition);
+
+    var data = JSON.parse(bloquesdata.textContent);
+    console.log("--------len bloques data----")
+    
+    var listaNombres = Object.values(data).map(function(bloque, index) {
+  return (index + 1) + '. ' + bloque.fields.nombre; // Añade el índice antes del nombre
+}).join('\n');
+
+const campusData = JSON.parse(campusdata.textContent);
+
+var lenBloques = Object.values(data).length;
+
+Object.values(data).forEach(function(bloque) {
+  //console.log("Values of campus");
+  //console.log(bloque);
+  //console.log(bloque.fields.longitud);
+
+  if (bloque.fields.entrada_campus){
+    console.log("*********************9")
+    const marker = new google.maps.Marker({
+      position: { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) },
+      map: map
+    });
+    const campusId = bloque.fields.campus;
+    console.log(campusId)
+    const campus = campusData.find(c => c.pk === parseInt(campusId));
+    console.log(campus)
+    const campusName = campus ? campus.fields.nombre : 'Nombre no encontrado';
+    
+    console.log(campusName)
+    addAnimatedLabel(map, marker.getPosition(),campusName,30);
+
+    // Agregar animación de genio al pasar el mouse sobre el marcador
+    var strDescription="Cantidad de bloques: " + lenBloques+"\n"+listaNombres
+    marker.addListener('mouseover', function() {
+          addGenieAnimation(map, marker,strDescription );
+        });
+
+        // Remover la animación al quitar el mouse del marcador
+        marker.addListener('mouseout', function() {
+          removeGenieAnimation(map, marker);
+        });
+  }
+});
+  }
+
+  function addPulseCircle(map, position) {
+    const overlay = new google.maps.OverlayView();
+
+    overlay.onAdd = function () {
+      const layer = this.getPanes().overlayMouseTarget;
+      const div = document.createElement('div');
+      div.className = 'pulse-circle';
+      layer.appendChild(div);
+
+      overlay.draw = function () {
+        const projection = this.getProjection();
+        const point = projection.fromLatLngToDivPixel(position);
+        div.style.left = point.x -30 + 'px'; // Ajusta la posición del círculo
+        div.style.top = point.y -40+ 'px'; // 60px abajo del marcador de persona
+      };
+    };
+
+    overlay.setMap(map);
+  }
+
+  function addAnimatedLabel(map, position, text, offsetY = 30) {
+  const overlay = new google.maps.OverlayView();
+
+  overlay.onAdd = function () {
+    const layer = this.getPanes().overlayLayer;
+    const div = document.createElement('div');
+    div.className = 'animated-label';
+    div.innerHTML = text;
+    layer.appendChild(div);
+
+    overlay.draw = function () {
+      const projection = this.getProjection();
+      const point = projection.fromLatLngToDivPixel(position);
+      div.style.left = point.x + 'px';
+      div.style.top = (point.y - offsetY) + 'px';
+    };
+  };
+
+  overlay.setMap(map);
+}
+
+
+  function addMarkers(map, triangleCoords,icon=null) {
+    
+    console.log("innerfunciton  addmarker")
+    console.log(icon)
+if  (icon!=null){
+    console.log("inner icon marker")
     // Creación de un marcador en el mapa usando la API de Google Maps.
-    marker = new google.maps.Marker({
+    const marker = new google.maps.Marker({
       position: triangleCoords[6], // Posición inicial del marcador en el mapa.
       map: map,                    // Asignación del mapa donde se colocará el marcador.
-      icon: personIcon,            // Ícono personalizado para el marcador.
+      icon: icon,            // Ícono personalizado para el marcador.
       title: "Te encuentras aquí", // Mensaje que se muestra al pasar el cursor sobre el marcador.
     });
 
@@ -89,9 +294,103 @@
         });
       });
     });
+}
+/* else{
+triangleCoords.forEach((campus, index) =>{
+  console.log(campus);
+if (index!=6){
+  const markerCampus = new google.maps.Marker({
+               position:campus, 
+               map: map,
+               title:  `Carrera ${index + 1}`,
+               animation: google.maps.Animation.DROP,
+               icon: getMarkerIcon( "Campus")
+           });
+markerCampus.addListener('mouseover', function() {
+ markerCampus.setAnimation(google.maps.Animation.BOUNCE);
+});
+markerCampus.addListener('mouseout', function() {
+     markerCampus.setAnimation(null);
+ });
+}
+ 
 
-    // Función para animar el movimiento del marcador en el mapa.
-    function animateMarker(marker, start, end, onComplete) {
+
+});
+}
+*/
+}
+
+function getMarkerIcon(title) {
+    if (title.includes('Bloque')) {
+      return 'https://maps.google.com/mapfiles/ms/icons/white.png'; // Icono blanco para carreras
+    } else if (title.includes('Campus')) {
+      return 'https://maps.google.com/mapfiles/ms/icons/yellow.png'; // Icono verde para campus
+    }
+}
+
+function addGenieAnimation(map, marker, text) 
+{
+     
+     const htmlText = text.replace(/\n/g, '<br>');
+    const div = document.createElement('div');
+    div.className = 'genie-animation';
+    div.innerHTML = htmlText;
+    
+    const genieAnimation = () => {
+        const position = marker.getPosition();
+        if (!position) return;
+
+        const overlay = new google.maps.OverlayView();
+        overlay.draw = () => {
+            const projection = overlay.getProjection();
+            if (!projection) return;
+
+            const point = projection.fromLatLngToContainerPixel(position);
+            if (!point) return;
+
+            div.style.left = (point.x + 30) + 'px'; // Ajusta el desplazamiento según tus necesidades
+            div.style.top = (point.y - 30) + 'px'; // Ajusta el desplazamiento según tus necesidades
+        };
+
+        overlay.setMap(map);
+        overlay.draw(); // Llama a draw() inicialmente para posicionar correctamente
+    };
+
+    genieAnimation(); // Llama inicialmente para posicionar correctamente
+
+    map.addListener('projection_changed', genieAnimation);
+    map.addListener('zoom_changed', genieAnimation);
+
+    map.getDiv().appendChild(div);
+
+    setTimeout(() => {
+      div.classList.add('genie-animation-visible');
+    }, 50);
+  }
+
+  function removeGenieAnimation(map, marker) {
+    const genie = document.querySelector('.genie-animation');
+    if (genie) {
+      genie.remove();
+    }
+  }
+function drawPolygons(map,triangleCoords) {
+const UNLTriangleCampus = new google.maps.Polygon({
+    paths: triangleCoords,
+    strokeColor: "#00FF00",
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: "#FF0000",
+    fillOpacity: 0.15,
+  });
+ 
+  UNLTriangleCampus.setMap(map);
+}
+// Función para animar el movimiento del marcador en el mapa.
+
+  function animateMarker(marker, start, end, onComplete) {
+
       let startTime;
       const duration = 2000; // Duración de la animación en milisegundos.
 
@@ -114,8 +413,35 @@
       }
       requestAnimationFrame(animate); // Iniciar la animación.
     }
+    
+  function addRotatedText(map, position, text) {
+    const overlay = new google.maps.OverlayView();
+
+    overlay.onAdd = function () {
+      const layer = this.getPanes().overlayLayer;
+      const div = document.createElement('div');
+      div.style.position = 'absolute';
+      div.style.transform = 'rotate(-45deg)';
+      div.style.whiteSpace = 'wrap';
+      div.style.fontSize = '16px';
+      div.style.fontWeight = 'bold';
+      div.style.color = '#FF0000';
+      div.innerHTML = text;
+      layer.appendChild(div);
+
+      overlay.draw = function () {
+        const projection = this.getProjection();
+        const point = projection.fromLatLngToDivPixel(position);
+        div.style.left = point.x -60 + 'px';
+        div.style.top = point.y  + 'px';
+      };
+    };
+
+    overlay.setMap(map);
   }
 
   initMap();
 </script>
+
+{% endif %} 
 {% endblock %}
