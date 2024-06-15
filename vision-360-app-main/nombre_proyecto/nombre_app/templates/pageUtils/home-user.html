@@ -3,29 +3,32 @@
 
 {% block content %}
 
+
 <div class="container-fluid border">
 
   <div class="row ">
-   </div>
-   <div id="map" style="width: 950px; height: 450px;"></div>
+  </div>
+  <div id="map" style="width: 950px; height: 450px;"></div>
 
-    
 </div>
 </div>
+
 
 
 <script>
-  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+  (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
     v: "weekly",
     // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
     // Add other bootstrap parameters as needed, using camel case.
   });
 
-// Initialize and add the map
-let map;
+  // Initialize and add the map
 
-async function initMap() {
+  let map;
+
+
+  async function initMap() {
     const position = { lat: -4.034410, lng: -79.202563 };
     const { Map } = await google.maps.importLibrary("maps");
 
@@ -57,46 +60,60 @@ async function initMap() {
 
     UNLTriangle.setMap(map);
 
+    // Definición del ícono 3D que se utilizará para el marcador en el mapa.
     const personIcon = {
-      url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA3UlEQVRIS+2T0Q3CMAxE2wmACYANGKFswAbAJMAkwAZsQEdgBJgANoA7yf4pcuyg5otGstI09l3znNZV4VEX1q/+y6ABzqMg3WJuI3hzEN0hOBVRPs/7NnhBcCSiD8yzvg2I6CSimxKIIh/8lRPpwRhVV8SiU33DeokgOnNEDIhlbShwjzfqZwOy1qtpidBAe5OFiEiIhohSg4iIisiyDPbI3iHOCUS6d0AO87MMmLxCtIincYQJ3jeIi3XESJNZ+zYE3Ho3QYTVQPO7a7NHg4FLwE1I/QCRvcHApfQBFMQiGZkJ85AAAAAASUVORK5CYII=",
-      scaledSize: new google.maps.Size(50, 50),
+      url: "../static/utils/img/persona.gif",  // URL de la imagen del ícono.
+      scaledSize: new google.maps.Size(60, 60), // Tamaño del ícono en el mapa.
     };
 
+    // Creación de un marcador en el mapa usando la API de Google Maps.
     marker = new google.maps.Marker({
-      position: triangleCoords[6],
-      map: map,
-      icon: personIcon,
-      title: "Te encuentras aquí",
+      position: triangleCoords[6], // Posición inicial del marcador en el mapa.
+      map: map,                    // Asignación del mapa donde se colocará el marcador.
+      icon: personIcon,            // Ícono personalizado para el marcador.
+      title: "Te encuentras aquí", // Mensaje que se muestra al pasar el cursor sobre el marcador.
     });
 
+    // Selección de todos los elementos de botón que comienzan con 'redirectCampus' en su id.
     document.querySelectorAll('[id^="redirectCampus"]').forEach(button => {
+      // Añadir un manejador de eventos para cada botón.
       button.addEventListener('click', (e) => {
+        // Obtener el id del campus desde el atributo data del botón presionado.
         const campusId = e.currentTarget.getAttribute('data-campus-id');
-        animateMarker(triangleCoords[6], triangleCoords[0], campusId);
+        // Función que anima el marcador desde una posición inicial a una final.
+        animateMarker(marker, triangleCoords[6], triangleCoords[7], () => {
+          animateMarker(marker, triangleCoords[7], triangleCoords[0], () => {
+            // Redirige al usuario a una URL específica después de la animación.
+            window.location.href = `/carrera/${campusId}/bloques/`;
+          });
+        });
       });
     });
-  }
 
-  function animateMarker(start, end, campusId) {
-    let startTime;
-    const duration = 2000;
+    // Función para animar el movimiento del marcador en el mapa.
+    function animateMarker(marker, start, end, onComplete) {
+      let startTime;
+      const duration = 2000; // Duración de la animación en milisegundos.
 
-    function animate(time) {
-      if (!startTime) startTime = time;
-      const progress = (time - startTime) / duration;
+      // Función que se llama a sí misma para actualizar la posición del marcador.
+      function animate(time) {
+        if (!startTime) startTime = time; // Establecer el tiempo de inicio si no está establecido.
+        const progress = (time - startTime) / duration; // Calcular el progreso de la animación.
 
-      if (progress < 1) {
-        const lat = start.lat + (end.lat - start.lat) * progress;
-        const lng = start.lng + (end.lng - start.lng) * progress;
-        marker.setPosition({ lat, lng });
-        requestAnimationFrame(animate);
-      } else {
-        marker.setPosition(end);
-        window.location.href = `/carrera/${campusId}/bloques/`;
+        if (progress < 1) {
+          // Calcular la nueva posición del marcador basado en el progreso.
+          const lat = start.lat + (end.lat - start.lat) * progress;
+          const lng = start.lng + (end.lng - start.lng) * progress;
+          marker.setPosition({ lat, lng }); // Actualizar la posición del marcador.
+          requestAnimationFrame(animate); // Continuar la animación.
+        } else {
+          // Cuando la animación termina, colocar el marcador en la posición final.
+          marker.setPosition(end);
+          if (onComplete) onComplete(); // Ejecutar la función de finalización, si existe.
+        }
       }
+      requestAnimationFrame(animate); // Iniciar la animación.
     }
-
-    requestAnimationFrame(animate);
   }
 
   initMap();
