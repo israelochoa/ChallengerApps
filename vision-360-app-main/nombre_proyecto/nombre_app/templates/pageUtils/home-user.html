@@ -15,8 +15,8 @@
 
 <style>
   .pulse-circle {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border: 3px solid rgba(255, 0, 0, 0.5);
     border-radius: 50%;
     position: absolute;
@@ -235,8 +235,8 @@ Object.values(data).forEach(function(bloque) {
       overlay.draw = function () {
         const projection = this.getProjection();
         const point = projection.fromLatLngToDivPixel(position);
-        div.style.left = point.x -30 + 'px'; // Ajusta la posición del círculo
-        div.style.top = point.y -40+ 'px'; // 60px abajo del marcador de persona
+        div.style.left = point.x -50 + 'px'; // Ajusta la posición del círculo
+        div.style.top = point.y -50+ 'px'; // 60px abajo del marcador de persona
       };
     };
 
