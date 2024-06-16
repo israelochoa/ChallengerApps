@@ -7,12 +7,12 @@
 
 {{ bloques|json_script:"bloquesdata" }}
 
-<div class="container-fluid border" style="width: 950px; height: 450px; display: flex;">
-  <div id="map" style="width: 600px; height: 450px; display: inline-block;">
+<div class="container-fluid border" style="width: 1200px; height: 600px; display: flex;">
+  <div id="map" style="width: 850px; height: 600px; display: inline-block;">
   </div>
-  <div id="row" style="width: 50px; height: 450px; display: inline-block;">
+  <div id="row" style="width: 50px; height: 600px; display: inline-block;">
   </div>
-  <div id="leyenda" style="width: 300px; height: 450px; display: inline-block;">
+  <div id="leyenda" style="width: 300px; height: 600px; display: inline-block;">
     <h3>Recorrido virtual de bloques del campus</h3>
     <ul>
       {% for bloque in bloques %}
@@ -21,6 +21,7 @@
     </ul>
   </div>
 </div>
+
 
 
 <script>
@@ -67,25 +68,17 @@
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    const position = { lat: -4.032678075410565, lng: -79.20019247309627 };
-
-
+    const position = { lat: -4.031353, lng: -79.199750 };
     map = new Map(document.getElementById("map"), {
       zoom: 18,
       center: position,
       mapId: "DEMO_MAP_ID",
     });
 
+    drawPolygons(map);
     await addMarkers(map, bloquesdata)
-    drawPolygons(map)
-    //initZoomControl(map);
-    //await initMapTypeControl(map);
-    //initFullscreenControl(map);
-
-
 
   }
-
   /**
    * Dibuja los polígonos en el mapa.
    * @param {google.maps.Map} map - El mapa de Google Maps.
@@ -131,8 +124,26 @@
       title: "CampusA1",
     });
 
+
+    // Crear un marcador con el ícono de la persona.
+    const personIcon = {
+      url: "/static/utils/img/persona.gif",
+      scaledSize: new google.maps.Size(40, 40),
+    };
+
+    console.log(triangleCampusA1[0]);
+
+    const animatedMarker = new google.maps.Marker({
+      position: { lat: -4.030758408796387, lng: -79.19970656084314 },
+      map: map,
+      icon: personIcon,
+      title: "Te encuentras aquí",
+    });
+
     UNLTriangle.setMap(map);
     UNLtriangleCampusA1.setMap(map);
+
+
   }
 
 
