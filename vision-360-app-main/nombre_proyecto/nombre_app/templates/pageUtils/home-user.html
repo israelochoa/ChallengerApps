@@ -25,21 +25,19 @@
   }
 
   @keyframes pulse {
-    0% {
-      transform: scale(0.8);
+
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(0.8);
       opacity: 0.7;
     }
 
     50% {
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.2);
       opacity: 0.3;
     }
-
-    100% {
-      transform: scale(0.8);
-      opacity: 0.7;
-    }
   }
+
 
 
   .animated-label {
@@ -147,6 +145,16 @@
   var markers = []; // Array para almacenar todos los marcadores
 
 
+  //Activar animacion de circulo cuando este pegman activo
+
+  function activatePulseAnimation(active) {
+    let pulseCircleDiv = document.querySelector('.pulse-circle');
+    console.log("ccccccc", pulseCircleDiv); // El elemento se obtiene correctamente
+    if (pulseCircleDiv) {
+      pulseCircleDiv.style.animation = active ? 'pulse 1s infinite ease-in-out' : 'none';
+    }
+  }
+
   async function initMap() {
     const position = { lat: -4.034410, lng: -79.202563 };
     const { Map } = await google.maps.importLibrary("maps");
@@ -155,6 +163,32 @@
       zoom: 16,
       center: position,
       mapId: "DEMO_MAP_ID",
+      streetViewControl: true
+    });
+
+    const positionCircle = new google.maps.LatLng(-4.033567, -79.201403);
+
+    // Crear el círculo
+    addPulseCircle(map, positionCircle);
+
+
+    // Anima el círculo con el movimiento de pegman
+
+    let checkInterval = setInterval(() => {
+      let pegmanButton = document.querySelector('button[title*="Street View"]');
+      if (pegmanButton) {
+        clearInterval(checkInterval);
+        pegmanButton.addEventListener('mousedown', () => {
+          activatePulseAnimation(true);
+        });
+        window.addEventListener('mouseup', () => {
+          activatePulseAnimation(false);
+        });
+      }
+    }, 100);
+
+    google.maps.event.addListener(map, 'zoom_changed', function () {
+      overlay.draw();
     });
 
     const triangleCoords = [
@@ -188,10 +222,6 @@
     //const positionBloques: 
     const pulsePosition = triangleCoords[6]; // Posición del marcador de persona
 
-    const positionCircle = new google.maps.LatLng(-4.033567, -79.201403);
-
-    // Crear el círculo palpitante debajo del marcador de persona
-    addPulseCircle(map, positionCircle);
 
     var data = JSON.parse(bloquesdata.textContent);
     console.log("--------len bloques data----")
@@ -253,14 +283,7 @@
 
   }
 
-  function activateAnimation(start) {
-        let div = document.querySelector('.pulse-circle');
-        if (div) {
-            div.style.animation = start ? 'pulse 1s infinite ease-in-out' : 'none';
-        }
-    }
-
-    function addPulseCircle(map, position) {
+  function addPulseCircle(map, position) {
     const overlay = new google.maps.OverlayView();
 
     overlay.onAdd = function () {
@@ -269,16 +292,19 @@
       div.className = 'pulse-circle';
       layer.appendChild(div);
 
-      overlay.draw = function () {
+      this.draw = function () {
         const projection = this.getProjection();
         const point = projection.fromLatLngToDivPixel(position);
-        div.style.left = point.x -50 + 'px'; // Ajusta la posición del círculo
-        div.style.top = point.y -50+ 'px'; // 60px abajo del marcador de persona
+        // Asegúrate de que los ajustes aquí están correctos
+        div.style.left = point.x - 50 + 'px'; // Centra el círculo: ajusta según el tamaño del círculo
+        div.style.top = point.y - 50 + 'px';  // Centra el círculo: ajusta según el tamaño del círculo
+        div.style.position = 'absolute';
       };
     };
 
     overlay.setMap(map);
   }
+
   function addAnimatedLabel(map, position, text, offsetY = 30) {
     const overlay = new google.maps.OverlayView();
 
