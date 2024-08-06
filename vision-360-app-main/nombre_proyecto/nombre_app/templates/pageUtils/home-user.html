@@ -1,19 +1,20 @@
-{% extends 'pageUtils/base-user.html'%}
+{% extends 'pageUtils/base-user.html' %}
 
 {% block content %}
 {% if bloques %}
 {{ bloques|json_script:"bloquesdata" }}
-
 {{ campuss|json_script:"campusdata" }}
-<div class="container-fluid border">
+
+<div class="container-fluid border" style="background-color: white; padding-top: 20px; border-radius: 4px; border: 1px solid #ffffff; box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);">
   <div class="row "></div>
-  <div id="map" style="width: 950px; height: 450px;"></div>
-  <div id="map-label" class="map-label">Universidad Nacional de Loja</div>
+  <div id="map" style="width: 1600px; height: 750px;"></div>
+  <div id="map-label" class="map-label" style="font-weight: bold; padding: 20px;">Universidad Nacional de Loja</div>
   <!-- Contenedor para el círculo palpitante -->
   <div id="pulse-circle-container"></div>
 </div>
 
 <style>
+  /* Estilos para el mapa y los elementos del mapa */
   .pulse-circle {
     width: 100px;
     height: 100px;
@@ -21,37 +22,23 @@
     border-radius: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
-    /* La animación inicial debe estar ausente o definida como 'none' */
   }
 
   @keyframes pulse {
-
-    0%,
-    100% {
+    0%, 100% {
       transform: translate(-50%, -50%) scale(0.8);
       opacity: 0.7;
     }
-
     50% {
       transform: translate(-50%, -50%) scale(1.2);
       opacity: 0.3;
     }
   }
 
-
-
   .animated-label {
     position: absolute;
     padding: 5px 10px;
-    background: linear-gradient(to right,
-        rgba(242, 242, 1, 0.974) 26%,
-        /* Comienza en el 0% y se extiende hasta el 20% */
-        rgba(1, 210, 0, 0.674) 63%,
-        /* Comienza en el 20% y se extiende hasta el 60% */
-        rgba(255, 0, 0, 0.674) 100%
-        /* Comienza en el 60% y se extiende hasta el 100% */
-      );
-
+    background: linear-gradient(to right, rgba(242, 242, 1, 0.974) 26%, rgba(1, 210, 0, 0.674) 63%, rgba(255, 0, 0, 0.674) 100%);
     color: #010000;
     font-size: 18px;
     font-weight: bold;
@@ -63,17 +50,14 @@
   }
 
   .animated-label:hover,
-  .animated-label:hover+.pulse-circle {
+  .animated-label:hover + .pulse-circle {
     opacity: 1;
   }
 
   @keyframes fadeInOut {
-
-    0%,
-    100% {
+    0%, 100% {
       opacity: 0.7;
     }
-
     50% {
       opacity: 1;
     }
@@ -89,7 +73,6 @@
     opacity: 0;
     transition: opacity 0.3s, transform 0.3s;
     z-index: 1000;
-    /* Asegura que el tooltip esté por encima de otros elementos */
   }
 
   .marker:hover .marker-tooltip {
@@ -110,18 +93,15 @@
     transform: scale(0) translateY(-100%);
     animation: genie-animation 0.5s ease forwards;
     z-index: 1000;
-    /* Asegura que esté por encima de otros elementos */
   }
 
   @keyframes genie-animation {
     0% {
       transform: scale(0) translateY(-100%);
     }
-
     70% {
       transform: scale(1.1) translateY(-30%);
     }
-
     100% {
       transform: scale(1) translateY(0);
     }
@@ -129,27 +109,20 @@
 </style>
 
 <script>
-  console.log("-------------------");
-  console.log()
-  console.log("-------------------");
   (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
     v: "weekly",
     // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
     // Add other bootstrap parameters as needed, using camel case.
   });
-
-  // Initialize and add the map
-
+  
   let map;
-  var markers = []; // Array para almacenar todos los marcadores
+  var markers = [];
+  let bloquesData = JSON.parse(document.getElementById('bloquesdata').textContent);
 
-
-  //Activar animacion de circulo cuando este pegman activo
-
+  // Activar animación de círculo cuando Pegman esté activo
   function activatePulseAnimation(active) {
     let pulseCircleDiv = document.querySelector('.pulse-circle');
-    console.log("ccccccc", pulseCircleDiv); // El elemento se obtiene correctamente
     if (pulseCircleDiv) {
       pulseCircleDiv.style.animation = active ? 'pulse 1s infinite ease-in-out' : 'none';
     }
@@ -167,12 +140,7 @@
     });
 
     const positionCircle = new google.maps.LatLng(-4.033567, -79.201403);
-
-    // Crear el círculo
     addPulseCircle(map, positionCircle);
-
-
-    // Anima el círculo con el movimiento de pegman
 
     let checkInterval = setInterval(() => {
       let pegmanButton = document.querySelector('button[title*="Street View"]');
@@ -187,10 +155,6 @@
       }
     }, 100);
 
-    google.maps.event.addListener(map, 'zoom_changed', function () {
-      overlay.draw();
-    });
-
     const triangleCoords = [
       { lat: -4.030758408796387, lng: -79.19970656084314 },
       { lat: -4.035487, lng: -79.199667 },
@@ -201,91 +165,52 @@
       { lat: -4.0329109967425785, lng: -79.20255192126763 },
       { lat: -4.032600, lng: -79.201661 },
     ];
-    console.log("call drawPolygons")
-    drawPolygons(map, triangleCoords)
-    console.log("call with null icon")
-    await addMarkers(map, triangleCoords, null)
+    drawPolygons(map, triangleCoords);
+    await addMarkers(map, triangleCoords, null);
 
-
-    // Definición del ícono 3D que se utilizará para el marcador en el mapa.
     const personIcon = {
-      url: "/static/utils/img/persona.gif",  // URL de la imagen del ícono.
-      scaledSize: new google.maps.Size(40, 40), // Tamaño del ícono en el mapa.
+      url: "/static/utils/img/persona.gif",
+      scaledSize: new google.maps.Size(40, 40),
     };
-    console.log("call with icon")
-    await addMarkers(map, triangleCoords, personIcon)
-
-    const bounds = new google.maps.LatLngBounds();
-    triangleCoords.forEach(coord => bounds.extend(coord));
-    const center = bounds.getCenter();
-
-    //const positionBloques: 
-    const pulsePosition = triangleCoords[6]; // Posición del marcador de persona
-
-
-    var data = JSON.parse(bloquesdata.textContent);
-    console.log("--------len bloques data----")
-
-    var listaNombres = Object.values(data).map(function (bloque, index) {
-      return (index + 1) + '. ' + bloque.fields.nombre; // Añade el índice antes del nombre
-    }).join('\n');
+    await addMarkers(map, triangleCoords, personIcon);
 
     const campusData = JSON.parse(campusdata.textContent);
+    let lenBloques = Object.values(bloquesData).length;
+    let listaNombres = Object.values(bloquesData).map((bloque, index) => (index + 1) + '. ' + bloque.fields.nombre).join('\n');
 
-    var lenBloques = Object.values(data).length;
-
-    Object.values(data).forEach(function (bloque) {
-      //console.log("Values of campus");
-      //console.log(bloque);
-      //console.log(bloque.fields.longitud);
-
+    Object.values(bloquesData).forEach(bloque => {
       if (bloque.fields.entrada_campus) {
-        console.log("*********************9")
         const marker = new google.maps.Marker({
           position: { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) },
           map: map
         });
-        const campusId = bloque.fields.campus;
-        console.log(campusId)
-        const campus = campusData.find(c => c.pk === parseInt(campusId));
-        console.log(campus)
+        const campus = campusData.find(c => c.pk === parseInt(bloque.fields.campus));
         const campusName = campus ? campus.fields.nombre : 'Nombre no encontrado';
 
-        console.log(campusName)
         addAnimatedLabel(map, marker.getPosition(), campusName, 30);
-
-        // Almacena el marcador y el nombre del bloque asociado
         markers.push({ marker: marker, name: listaNombres });
-
-        // Mostrar la lista de nombres de bloques inicialmente
         addGenieAnimation(map, marker, listaNombres);
 
-        // Ocultar después de 2 segundos
         setTimeout(() => {
           removeGenieAnimation(map, marker);
         }, 2000);
 
-        // Agregar animación de genio al pasar el mouse sobre el marcador
-        var strDescription = "Cantidad de bloques: " + lenBloques + "\n" + listaNombres
-        marker.addListener('mouseover', function () {
+        let strDescription = "Cantidad de bloques: " + lenBloques + "\n" + listaNombres;
+        marker.addListener('mouseover', () => {
           addGenieAnimation(map, marker, strDescription);
         });
 
-        // Remover la animación al quitar el mouse del marcador
-        marker.addListener('mouseout', function () {
+        marker.addListener('mouseout', () => {
           removeGenieAnimation(map, marker);
         });
       }
     });
 
-    // Inicia el intervalo para mostrar leyendas aleatorias
     startRandomLegendDisplay();
-
   }
 
   function addPulseCircle(map, position) {
     const overlay = new google.maps.OverlayView();
-
     overlay.onAdd = function () {
       const layer = this.getPanes().overlayMouseTarget;
       const div = document.createElement('div');
@@ -295,19 +220,16 @@
       this.draw = function () {
         const projection = this.getProjection();
         const point = projection.fromLatLngToDivPixel(position);
-        // Asegúrate de que los ajustes aquí están correctos
-        div.style.left = point.x - 50 + 'px'; // Centra el círculo: ajusta según el tamaño del círculo
-        div.style.top = point.y - 50 + 'px';  // Centra el círculo: ajusta según el tamaño del círculo
+        div.style.left = point.x - 50 + 'px';
+        div.style.top = point.y - 50 + 'px';
         div.style.position = 'absolute';
       };
     };
-
     overlay.setMap(map);
   }
 
   function addAnimatedLabel(map, position, text, offsetY = 30) {
     const overlay = new google.maps.OverlayView();
-
     overlay.onAdd = function () {
       const layer = this.getPanes().overlayLayer;
       const div = document.createElement('div');
@@ -322,101 +244,49 @@
         div.style.top = (point.y - offsetY) + 'px';
       };
     };
-
     overlay.setMap(map);
   }
 
-
   function addMarkers(map, triangleCoords, icon = null) {
-
-    console.log("innerfunciton  addmarker")
-    console.log(icon)
     if (icon != null) {
-      console.log("inner icon marker")
-      // Creación de un marcador en el mapa usando la API de Google Maps.
       const marker = new google.maps.Marker({
-        position: triangleCoords[6], // Posición inicial del marcador en el mapa.
-        map: map,                    // Asignación del mapa donde se colocará el marcador.
-        icon: icon,            // Ícono personalizado para el marcador.
-        title: "Te encuentras aquí", // Mensaje que se muestra al pasar el cursor sobre el marcador.
+        position: triangleCoords[6],
+        map: map,
+        icon: icon,
+        title: "Te encuentras aquí",
       });
 
-      // Selección de todos los elementos de botón que comienzan con 'redirectCampus' en su id.
       document.querySelectorAll('[id^="redirectCampus"]').forEach(button => {
-        // Añadir un manejador de eventos para cada botón.
         button.addEventListener('click', (e) => {
-          // Obtener el id del campus desde el atributo data del botón presionado.
           const campusId = e.currentTarget.getAttribute('data-campus-id');
-          // Función que anima el marcador desde una posición inicial a una final.
           animateMarker(marker, triangleCoords[6], triangleCoords[7], () => {
             animateMarker(marker, triangleCoords[7], triangleCoords[0], () => {
-              // Redirige al usuario a una URL específica después de la animación.
               window.location.href = `/carrera/${campusId}/bloques/`;
             });
           });
         });
       });
     }
-    /* else{
-    triangleCoords.forEach((campus, index) =>{
-      console.log(campus);
-    if (index!=6){
-      const markerCampus = new google.maps.Marker({
-                   position:campus, 
-                   map: map,
-                   title:  `Carrera ${index + 1}`,
-                   animation: google.maps.Animation.DROP,
-                   icon: getMarkerIcon( "Campus")
-               });
-    markerCampus.addListener('mouseover', function() {
-     markerCampus.setAnimation(google.maps.Animation.BOUNCE);
-    });
-    markerCampus.addListener('mouseout', function() {
-         markerCampus.setAnimation(null);
-     });
-    }
-     
-    
-    
-    });
-    }
-    */
   }
-
-  function getMarkerIcon(title) {
-    if (title.includes('Bloque')) {
-      return 'https://maps.google.com/mapfiles/ms/icons/white.png'; // Icono blanco para carreras
-    } else if (title.includes('Campus')) {
-      return 'https://maps.google.com/mapfiles/ms/icons/yellow.png'; // Icono verde para campus
-    }
-  }
-
-  ////////////////////aquiii
 
   function startRandomLegendDisplay() {
     setInterval(function () {
-      if (markers.length === 0) return; // Verifica que hayan marcadores
-
-      const randomIndex = Math.floor(Math.random() * markers.length); // Selecciona un índice aleatorio
-      const randomMarkerInfo = markers[randomIndex]; // Obtiene la info del marcador aleatorio
-
-      addGenieAnimation(map, randomMarkerInfo.marker, randomMarkerInfo.name); // Muestra la leyenda con el nombre del bloque
-
-      setTimeout(function () {
-        removeGenieAnimation(map, randomMarkerInfo.marker); // Oculta la leyenda después de 2 segundos
+      if (markers.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * markers.length);
+      const randomMarkerInfo = markers[randomIndex];
+      addGenieAnimation(map, randomMarkerInfo.marker, randomMarkerInfo.name);
+      setTimeout(() => {
+        removeGenieAnimation(map, randomMarkerInfo.marker);
       }, 2000);
-
-    }, 300000); // 300000 milisegundos = 5 minutos
+    }, 300000);
   }
 
   function addGenieAnimation(map, marker, text) {
-    // Crea y muestra la etiqueta
     const div = document.createElement('div');
     div.className = 'genie-animation';
-    div.innerHTML = text.replace(/\n/g, '<br>'); // Convertir saltos de línea en etiquetas <br>
+    div.innerHTML = text.replace(/\n/g, '<br>');
     map.getDiv().appendChild(div);
 
-    // Asegura que la etiqueta se posicione correctamente
     const overlay = new google.maps.OverlayView();
     overlay.onAdd = function () {
       this.getPanes().overlayLayer.appendChild(div);
@@ -437,12 +307,6 @@
     }
   }
 
-  function removeGenieAnimation(map, marker) {
-    const genie = document.querySelector('.genie-animation');
-    if (genie) {
-      genie.remove();
-    }
-  }
   function drawPolygons(map, triangleCoords) {
     const UNLTriangleCampus = new google.maps.Polygon({
       paths: triangleCoords,
@@ -452,39 +316,30 @@
       fillColor: "#FF0000",
       fillOpacity: 0.15,
     });
-
     UNLTriangleCampus.setMap(map);
   }
-  // Función para animar el movimiento del marcador en el mapa.
 
   function animateMarker(marker, start, end, onComplete) {
-
     let startTime;
-    const duration = 3000; // Duración de la animación en milisegundos.
-
-    // Función que se llama a sí misma para actualizar la posición del marcador.
+    const duration = 1000;
     function animate(time) {
-      if (!startTime) startTime = time; // Establecer el tiempo de inicio si no está establecido.
-      const progress = (time - startTime) / duration; // Calcular el progreso de la animación.
-
+      if (!startTime) startTime = time;
+      const progress = (time - startTime) / duration;
       if (progress < 1) {
-        // Calcular la nueva posición del marcador basado en el progreso.
         const lat = start.lat + (end.lat - start.lat) * progress;
         const lng = start.lng + (end.lng - start.lng) * progress;
-        marker.setPosition({ lat, lng }); // Actualizar la posición del marcador.
-        requestAnimationFrame(animate); // Continuar la animación.
+        marker.setPosition({ lat, lng });
+        requestAnimationFrame(animate);
       } else {
-        // Cuando la animación termina, colocar el marcador en la posición final.
         marker.setPosition(end);
-        if (onComplete) onComplete(); // Ejecutar la función de finalización, si existe.
+        if (onComplete) onComplete();
       }
     }
-    requestAnimationFrame(animate); // Iniciar la animación.
+    requestAnimationFrame(animate);
   }
 
   function addRotatedText(map, position, text) {
     const overlay = new google.maps.OverlayView();
-
     overlay.onAdd = function () {
       const layer = this.getPanes().overlayLayer;
       const div = document.createElement('div');
@@ -496,7 +351,6 @@
       div.style.color = '#FF0000';
       div.innerHTML = text;
       layer.appendChild(div);
-
       overlay.draw = function () {
         const projection = this.getProjection();
         const point = projection.fromLatLngToDivPixel(position);
@@ -504,12 +358,48 @@
         div.style.top = point.y + 'px';
       };
     };
-
     overlay.setMap(map);
+  }
+
+  window.handleSearch = handleSearch;
+
+  function handleSearch(event) {
+    event.preventDefault();
+    let searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    let found = false;
+
+    bloquesData.forEach(bloque => {
+      if (bloque.fields.nombre.toLowerCase() === searchTerm) {
+        let position = { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) };
+        map.setCenter(position);
+        map.setZoom(18);
+        let panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+          position: position,
+          pov: { heading: 34, pitch: 10 }
+        });
+        map.setStreetView(panorama);
+        found = true;
+      }
+    });
+
+    if (!found) {
+      alert("No se encontró el bloque especificado.");
+    }
   }
 
   initMap();
 </script>
 
+{% else %}
+<div style="text-align: center;">
+  <div id="error-container" style="margin-bottom: 20px;">
+    <p>El campus {{ campus.codigo_identificativo }} no cuenta con bloques que permitan una visita en 360. Añada bloques desde el administrador</p>
+    <button onclick="window.history.back()" class="btn btn-warning">Ir a Admin</button>
+  </div>
+  <p style="font-style: italic; color: green;">¡Gracias por visitarnos!</p>
+</div>
+<script>
+  console.log("No ingreso");
+</script>
 {% endif %}
 {% endblock %}

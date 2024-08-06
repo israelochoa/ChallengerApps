@@ -1,32 +1,33 @@
 {% extends 'pageUtils/base-user.html' %}
 
 {% block content %}
-
-
 {% if bloques %}
-
 {{ bloques|json_script:"bloquesdata" }}
 
-<div class="container-fluid border" style="width: 1200px; height: 600px; display: flex;">
-  <div id="map" style="width: 850px; height: 600px; display: inline-block;">
+<div class="container-fluid" style="display: flex; gap: 20px;">
+  <!-- Contenedor del Mapa -->
+  <div
+    style="flex: 1; height: 600px; background-color: white; border: 1px solid #ffffff; box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+    <div id="map" style="width: 100%; height: 100%;"></div>
   </div>
-  <div id="row" style="width: 50px; height: 600px; display: inline-block;">
-  </div>
-  <div id="leyenda" style="width: 300px; height: 600px; display: inline-block;">
-    <h3>Recorrido virtual de bloques del campus</h3>
-    <ul>
-      {% for bloque in bloques %}
-      <li><a href="{{ bloque.fields.url }}" target="_blank">{{ bloque.fields.nombre }}</a></li>
-      {% endfor %}
-    </ul>
+
+  <!-- Contenedor del Recorrido Virtual -->
+  <div
+    style="width: 300px; height: 600px; background-color: white; border: 1px solid #ffffff; box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+    <div id="leyenda" style="width: 100%; height: 100%; padding: 20px;">
+      <h3 style="font-weight: bold; text-align: center; color: #111927;">Recorrido virtual de bloques del campus</h3>
+      <ul style="list-style-type: disc; padding-left: 20px; padding-top: 20px;">
+        {% for bloque in bloques %}
+        <li style="margin-bottom: 10px;">
+          <a href="{{ bloque.fields.url }}" target="_blank">{{ bloque.fields.nombre }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 </div>
 
-
-
 <script>
-  // Tu función initMap existente aquí
-
   console.log(bloquesdata);
   (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
     key: "AIzaSyAMFoCMTroNP6FovWouT52TMnDlNfqpVLU",
@@ -35,38 +36,38 @@
     // Add other bootstrap parameters as needed, using camel case.
   });
 
-  // Initialize and add the map
   let map;
-  // Función para agregar marcadores al mapa
-  function addMarkers(map, bloques) {
+  let markers = [];
+  let bloquesData = JSON.parse(document.getElementById('bloquesdata').textContent);
 
-    var data = JSON.parse(bloques.textContent);
-    Object.values(data).forEach(function (bloque) {
-      console.log(bloque.fields.latitud);
-      console.log(bloque.fields.longitud);
-      const marker = new google.maps.Marker({
-        position: { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) },
-        map: map,
-        title: bloque.fields.nombre  // El título se muestra al pasar el mouse sobre el marcador
-      });
-      marker.addListener('click', function () {
-        const panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
-          position: marker.getPosition(),
-          pov: {
-            heading: 34,
-            pitch: 10
-          }
+  function handleSearch(event) {
+    event.preventDefault();
+    let searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    let found = false;
+
+    bloquesData.forEach(bloque => {
+      if (bloque.fields.nombre.toLowerCase() === searchTerm) {
+        let position = { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) };
+        map.setCenter(position);
+        map.setZoom(18);
+        console.log("2222");
+
+        let panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+          position: position,
+          pov: { heading: 34, pitch: 10 }
         });
         map.setStreetView(panorama);
-      })
-      //map.setStreetView(panorama);
+        found = true;
+      }
     });
 
+    if (!found) {
+      alert("No se encontró el bloque especificado.");
+    }
   }
 
   async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
     const position = { lat: -4.031353, lng: -79.199750 };
     map = new Map(document.getElementById("map"), {
@@ -76,13 +77,26 @@
     });
 
     drawPolygons(map);
-    await addMarkers(map, bloquesdata)
-
+    addMarkers(map);
   }
-  /**
-   * Dibuja los polígonos en el mapa.
-   * @param {google.maps.Map} map - El mapa de Google Maps.
-   */
+
+  function addMarkers(map) {
+    bloquesData.forEach(bloque => {
+      const marker = new google.maps.Marker({
+        position: { lat: parseFloat(bloque.fields.latitud), lng: parseFloat(bloque.fields.longitud) },
+        map: map,
+        title: bloque.fields.nombre
+      });
+      marker.addListener('click', function () {
+        const panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+          position: marker.getPosition(),
+          pov: { heading: 34, pitch: 10 }
+        });
+        map.setStreetView(panorama);
+      });
+      markers.push(marker);
+    });
+  }
 
   function drawPolygons(map) {
     const triangleCoords = [
@@ -124,7 +138,6 @@
       title: "CampusA1",
     });
 
-
     // Crear un marcador con el ícono de la persona.
     const personIcon = {
       url: "/static/utils/img/persona.gif",
@@ -142,9 +155,8 @@
 
     UNLTriangle.setMap(map);
     UNLtriangleCampusA1.setMap(map);
-
-
   }
+
 
 
   function initZoomControl(map) {
@@ -166,8 +178,6 @@
       }
     });
   }
-
-
 
   function initMapTypeControl(map) {
     const mapTypeControlDiv = document.querySelector(".maptype-control");
@@ -246,18 +256,14 @@
     }
   }
 
-
-
-
   initMap();
 </script>
 
 {% else %}
 <div style="text-align: center;">
-
   <div id="error-container" style="margin-bottom: 20px;">
-    <p>El campus {{ campus.codigo_identificativo }} no cuenta con bloques que permitan una visita en 360.
-      Anada bloques desde el administrador</p>
+    <p>El campus {{ campus.codigo_identificativo }} no cuenta con bloques que permitan una visita en 360. Añada bloques
+      desde el administrador</p>
     <button onclick="window.history.back()" class="btn btn-warning">Ir a Admin</button>
   </div>
   <p style="font-style: italic; color: green;">¡Gracias por visitarnos!</p>
@@ -265,7 +271,5 @@
 <script>
   console.log("No ingreso");
 </script>
-
 {% endif %}
-
-{% endblock%}
+{% endblock %}
