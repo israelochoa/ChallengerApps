@@ -22,17 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4p(ry#a9&-*ywjqp+=5ld2txxq+w-2!=t046t_3hlp%4x@e=b9'
+SECRET_KEY = os.environ.get('SECRET_KEY', '2if+82+t$)u0937c815z%dwkfwz0lhbozxg7q3+&rm%xe91_8m ')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =True
+DEBUG =False
 ##ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 #CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in os.environ else []
 #if DEBUG:
-###    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.100.106']
  #   CSRF_TRUSTED_ORIGINS += ['http://localhost:8000']
-ALLOWED_HOSTS = []
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000'] 
+#ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://192.168.100.106:8000'] 
 
 # Application definition
 #'whitenoise.runserver_nostatic',
