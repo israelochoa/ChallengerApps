@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://192.168.100.106:8000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://192.168.100.106:8000','http://localhost:80']
 
 # Application definition
 INSTALLED_APPS = [
@@ -90,7 +90,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+STATIC_URL = '/vision360/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'nombre_app/static')]
 
@@ -106,4 +106,3 @@ MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE
 CORS_ALLOWED_ORIGINS = [
     "https://computacion.unl.edu.ec",
 ]
-CORS_ALLOW_CREDENTIALS = True

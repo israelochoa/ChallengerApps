@@ -1,13 +1,22 @@
-version: '3.8'
-
 services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - 8000
     volumes:
+      - static:/app/staticfiles
       - .:/app
     env_file:
       - nombre_proyecto/.env
-    environment:
-      - DEBUG=True
+
+  nginx:
+      image: nginx:1.13
+      ports:
+        - 80:80
+      volumes:
+        - ./config/nginx/conf.d:/etc/nginx/conf.d
+        - static:/app/staticfiles
+      depends_on:
+        - web
+volumes:
+  static:

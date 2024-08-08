@@ -1,15 +1,13 @@
-FROM python:3.9-slim
+FROM python:3.10
 
 WORKDIR /app
 
-COPY requirements.txt /app/
-
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
-
 COPY . /app/
+
+RUN pip install --upgrade pip
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
-
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["gunicorn", "-c", "config/gunicorn/conf.py", "--bind", ":8000", "nombre_proyecto.wsgi:application"]

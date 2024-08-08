@@ -22,8 +22,8 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('admin', admin.site.urls),
-    path('', include('nombre_app.urls')),
+    path('vision360/admin', admin.site.urls),
+    path('vision360/', include('nombre_app.urls')),
 ]
 
 
