@@ -4,6 +4,7 @@
 {% if bloques %}
 {{ bloques|json_script:"bloquesdata" }}
 
+
 <div class="container-fluid" style="display: flex; gap: 20px;">
   <!-- Contenedor del Mapa -->
   <div
@@ -19,7 +20,7 @@
       <ul style="list-style-type: disc; padding-left: 20px; padding-top: 20px;">
         {% for bloque in bloques %}
         <li style="margin-bottom: 10px;">
-          <a href="{{ bloque.fields.url }}" target="_blank">{{ bloque.fields.nombre }}</a>
+          <a href="javascript:void(0);" onclick="viewStreetView('{{ bloque.fields.latitud|floatformat:6 }}', '{{ bloque.fields.longitud|floatformat:6 }}');">{{ bloque.fields.nombre }}</a>
         </li>
         {% endfor %}
       </ul>
@@ -160,7 +161,16 @@
     UNLtriangleCampusA1.setMap(map);
   }
 
-
+  function viewStreetView(lat, lng) {
+    let position = { lat: parseFloat(lat), lng: parseFloat(lng) };
+    map.setCenter(position);
+    map.setZoom(18);
+    let panorama = new google.maps.StreetViewPanorama(document.getElementById('map'), {
+      position: position,
+      pov: { heading: 34, pitch: 10 }
+    });
+    map.setStreetView(panorama);
+  }
 
   function initZoomControl(map) {
     document.addEventListener('DOMContentLoaded', function () {
