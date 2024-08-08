@@ -1,19 +1,20 @@
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '2if+82+t$)u0937c815z%dwkfwz0lhbozxg7q3+&rm%xe91_8m')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.100.106']
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://192.168.100.106:8000']
 
 # Application definition
@@ -98,3 +99,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'nombre_app/static')]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INSTALLED_APPS += ['corsheaders']
+MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE
+
+CORS_ALLOWED_ORIGINS = [
+    "https://computacion.unl.edu.ec",
+]
+CORS_ALLOW_CREDENTIALS = True

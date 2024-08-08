@@ -26,3 +26,6 @@ webencodings==0.5.1
 wheel==0.43.0
 whitenoise==6.6.0
 zopfli==0.2.3
+python-dotenv==1.0.1
+django-cors-headers==3.14.0
+
